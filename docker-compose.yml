@@ -1,0 +1,14 @@
+version: "3.8"
+services:
+  postgres:
+    container_name: ultimate-bank-db
+    image: postgres:latest
+    hostname: ultimate-bank-db
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: docker
+      POSTGRES_DB: ultimate-bank
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
