@@ -6,9 +6,8 @@ public record UserResponse(
         @JsonProperty("CPF")
         String CPF,
 
-        @JsonProperty("hashed_CPF")
-        String hashedCPF,
         String name,
         String email,
-        String password){
+        String password) {
+
 }
