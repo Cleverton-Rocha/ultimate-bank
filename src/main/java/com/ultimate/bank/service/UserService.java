@@ -101,4 +101,17 @@ public class UserService {
         return ResponseEntity.ok(new UpdateUserResponse(user));
     }
 
+    @Transactional
+    public ResponseEntity<Void> deleteUser(Long id, JwtAuthenticationToken token) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found."));
+
+        if (user.getCPF().equals(token.getName())) {
+            userRepository.delete(user);
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        return ResponseEntity.ok().build();
+    }
 }
