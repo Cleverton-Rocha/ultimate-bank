@@ -2,10 +2,7 @@ package com.ultimate.bank.domain;
 
 import com.ultimate.bank.model.auth.LoginRequest;
 import com.ultimate.bank.model.user.UserRequest;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -14,11 +11,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @Data
 public class User {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @Column(length = 11, nullable = false, unique = true)
     private String CPF;
-
-    @Column(nullable = false, name = "hashed_CPF")
-    private String hashedCPF;
 
     @Column(nullable = false)
     private String name;
@@ -31,9 +28,8 @@ public class User {
 
     public void createUser(UserRequest request,
                            BCryptPasswordEncoder passwordEncoder,
-                           String HashedCPF) {
-        this.CPF = passwordEncoder.encode(request.CPF());
-        this.hashedCPF = HashedCPF;
+                           String hashedCPF) {
+        this.CPF = hashedCPF;
         this.name = request.name();
         this.email = request.email();
         this.password = passwordEncoder.encode(request.password());
