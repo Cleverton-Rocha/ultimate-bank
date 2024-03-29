@@ -1,10 +1,12 @@
 package com.ultimate.bank.service;
 
+import com.ultimate.bank.domain.Account;
 import com.ultimate.bank.domain.User;
 import com.ultimate.bank.exception.CPFIsNotUniqueException;
 import com.ultimate.bank.exception.EmailIsNotUniqueException;
 import com.ultimate.bank.exception.UserNotFoundException;
 import com.ultimate.bank.model.user.*;
+import com.ultimate.bank.repository.AccountRepository;
 import com.ultimate.bank.repository.UserRepository;
 import com.ultimate.bank.util.HashUtil;
 import jakarta.transaction.Transactional;
@@ -17,11 +19,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final AccountRepository accountRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
     public UserService(UserRepository userRepository,
+                          AccountRepository accountRepository,
                        BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.accountRepository = accountRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -42,7 +47,11 @@ public class UserService {
         User newUser = new User();
         newUser.createUser(request, passwordEncoder, hashedCPF);
 
+        Account newAccount = new Account();
+        newAccount.createAccount(newUser);
+
         userRepository.save(newUser);
+        accountRepository.save(newAccount);
 
         return ResponseEntity.ok(new CreateUserResponse(
                 newUser.getId(),
