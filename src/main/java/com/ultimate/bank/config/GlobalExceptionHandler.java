@@ -1,9 +1,9 @@
 package com.ultimate.bank.config;
 
 import com.ultimate.bank.exception.BadCredentialsException;
-import com.ultimate.bank.exception.CPFIsNotUniqueException;
-import com.ultimate.bank.exception.EmailIsNotUniqueException;
-import com.ultimate.bank.exception.UserNotFoundException;
+import com.ultimate.bank.exception.InsufficientFundsException;
+import com.ultimate.bank.exception.IsNotUniqueException;
+import com.ultimate.bank.exception.NotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -14,13 +14,8 @@ import java.util.Objects;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(CPFIsNotUniqueException.class)
-    public ResponseEntity<String> handleEmailIsNotUnique(CPFIsNotUniqueException ex) {
-        return ResponseEntity.status(400).body(ex.getMessage());
-    }
-
-    @ExceptionHandler(EmailIsNotUniqueException.class)
-    public ResponseEntity<String> handleCustomerNotFound(EmailIsNotUniqueException ex) {
+    @ExceptionHandler(IsNotUniqueException.class)
+    public ResponseEntity<String> handleEmailIsNotUnique(IsNotUniqueException ex) {
         return ResponseEntity.status(400).body(ex.getMessage());
     }
 
@@ -29,9 +24,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(401).body(ex.getMessage());
     }
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<String> handleUserNotFound(UserNotFoundException ex) {
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<String> handleUserNotFound(NotFoundException ex) {
         return ResponseEntity.status(404).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(InsufficientFundsException.class)
+    public ResponseEntity<String> handleInsufficientFunds(InsufficientFundsException ex) {
+        return ResponseEntity.status(422).body(ex.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
