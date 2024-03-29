@@ -30,7 +30,7 @@ public class UserService {
 
         String hashedCPF = hashCPF(request.CPF());
 
-        if (userRepository.findByHashedCPF(hashedCPF).isPresent()) {
+        if (userRepository.findByCPF(hashedCPF).isPresent()) {
             throw new CPFIsNotUniqueException("CPF already exists.");
         }
 
@@ -44,9 +44,11 @@ public class UserService {
 
         userRepository.save(newUser);
 
-        return ResponseEntity.ok(new UserResponse(newUser.getCPF(),
-                newUser.getHashedCPF(), newUser.getName(),
-                newUser.getEmail(), newUser.getPassword()));
+        return ResponseEntity.ok(new UserResponse(
+                newUser.getCPF(),
+                newUser.getName(),
+                newUser.getEmail(),
+                newUser.getPassword()));
     }
 
     private String hashCPF(String CPF) {
