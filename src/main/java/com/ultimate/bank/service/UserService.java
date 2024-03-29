@@ -2,9 +2,8 @@ package com.ultimate.bank.service;
 
 import com.ultimate.bank.domain.Account;
 import com.ultimate.bank.domain.User;
-import com.ultimate.bank.exception.CPFIsNotUniqueException;
-import com.ultimate.bank.exception.EmailIsNotUniqueException;
-import com.ultimate.bank.exception.UserNotFoundException;
+import com.ultimate.bank.exception.IsNotUniqueException;
+import com.ultimate.bank.exception.NotFoundException;
 import com.ultimate.bank.model.user.*;
 import com.ultimate.bank.repository.AccountRepository;
 import com.ultimate.bank.repository.UserRepository;
@@ -36,11 +35,11 @@ public class UserService {
         String hashedCPF = HashUtil.hashCPF(request.CPF());
 
         if (userRepository.findByCPF(hashedCPF).isPresent()) {
-            throw new CPFIsNotUniqueException("CPF already exists.");
+            throw new IsNotUniqueException("CPF already exists.");
         }
 
         if (userRepository.findByEmail(request.email()).isPresent()) {
-            throw new EmailIsNotUniqueException("Email already exists.");
+            throw new IsNotUniqueException("Email already exists.");
         }
 
 
@@ -64,7 +63,7 @@ public class UserService {
     @Transactional
     public ResponseEntity<UserResponse> getUser(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found."));
+                .orElseThrow(() -> new NotFoundException("User not found."));
 
         return ResponseEntity.ok(new UserResponse(user));
     }
@@ -74,14 +73,14 @@ public class UserService {
                                                          UpdateUserRequest request,
                                                          JwtAuthenticationToken token) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found."));
+                .orElseThrow(() -> new NotFoundException("User not found."));
 
         if (user.getCPF().equals(token.getName())) {
             if (request.CPF() != null) {
                 String hashedCPF = HashUtil.hashCPF(request.CPF());
                 if (!hashedCPF.equals(user.getCPF()) &&
                         userRepository.findByCPF(hashedCPF).isPresent()) {
-                    throw new CPFIsNotUniqueException("CPF already exists.");
+                    throw new IsNotUniqueException("CPF already exists.");
                 }
                 user.setCPF(hashedCPF);
             }
@@ -93,7 +92,7 @@ public class UserService {
             if (request.email() != null) {
                 if (!request.email().equals(user.getEmail()) &&
                         userRepository.findByEmail(request.email()).isPresent()) {
-                    throw new EmailIsNotUniqueException("Email already exists.");
+                    throw new IsNotUniqueException("Email already exists.");
                 }
                 user.setEmail(request.email());
             }
@@ -113,7 +112,7 @@ public class UserService {
     @Transactional
     public ResponseEntity<Void> deleteUser(Long id, JwtAuthenticationToken token) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found."));
+                .orElseThrow(() -> new NotFoundException("User not found."));
 
         if (user.getCPF().equals(token.getName())) {
             userRepository.delete(user);
