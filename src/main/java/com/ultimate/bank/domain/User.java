@@ -1,10 +1,12 @@
 package com.ultimate.bank.domain;
 
 import com.ultimate.bank.model.auth.LoginRequest;
-import com.ultimate.bank.model.user.UserRequest;
+import com.ultimate.bank.model.user.CreateUserRequest;
+import com.ultimate.bank.model.user.UpdateUserRequest;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
 @Table(name = "users")
 @Entity
@@ -26,7 +28,7 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    public void createUser(UserRequest request,
+    public void createUser(CreateUserRequest request,
                            BCryptPasswordEncoder passwordEncoder,
                            String hashedCPF) {
         this.CPF = hashedCPF;
@@ -34,7 +36,6 @@ public class User {
         this.email = request.email();
         this.password = passwordEncoder.encode(request.password());
     }
-
 
     public boolean isLoginCorrect(LoginRequest request,
                                   BCryptPasswordEncoder passwordEncoder) {
