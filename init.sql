@@ -1,4 +1,5 @@
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
+CREATE TYPE transaction_type AS ENUM ('Deposit', 'Withdraw', 'Transfer');
+CREATE CAST (VARCHAR AS transaction_type) WITH INOUT AS IMPLICIT;
 
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
@@ -17,8 +18,9 @@ CREATE TABLE IF NOT EXISTS accounts (
 
 CREATE TABLE IF NOT EXISTS transactions (
     id SERIAL PRIMARY KEY,
-    account_id INTEGER NOT NULL,
-    amount DECIMAL(10, 2) NOT NULL,
-    transaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (account_id) REFERENCES accounts(id)
+    account_id INTEGER REFERENCES accounts(id) ON DELETE CASCADE,
+    type transaction_type NOT NULL,
+    amount INT NOT NULL,
+    description VARCHAR(255) NOT NULL,
+    transaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
