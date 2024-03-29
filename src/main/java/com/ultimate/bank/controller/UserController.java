@@ -36,4 +36,9 @@ public class UserController {
         return userService.updateUser(id, request, token);
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id,
+                                           JwtAuthenticationToken token) {
+        return userService.deleteUser(id, token);
+    }
 }
