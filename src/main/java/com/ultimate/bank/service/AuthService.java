@@ -1,6 +1,5 @@
 package com.ultimate.bank.service;
 
-import com.google.common.hash.Hashing;
 import com.ultimate.bank.exception.BadCredentialsException;
 import com.ultimate.bank.model.auth.LoginRequest;
 import com.ultimate.bank.model.auth.LoginResponse;
@@ -13,8 +12,8 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.time.ZoneId;
 
 @Service
 public class AuthService {
@@ -41,14 +40,14 @@ public class AuthService {
             throw new BadCredentialsException("Invalid CPF or password.");
         }
 
-        var now = Instant.now();
-        var expiresIn = 300L;
+        var now = Instant.now().atZone(ZoneId.systemDefault());
+        var expiresIn = 600L;
 
         var claims = JwtClaimsSet.builder()
                 .issuer("ultimate-bank")
-                .subject(HashUtil.hashCPF(user.get().getCPF()))
-                .issuedAt(now)
-                .expiresAt(now.plusSeconds(expiresIn))
+                .subject(hashedCPF)
+                .issuedAt(now.toInstant())
+                .expiresAt(now.plusSeconds(expiresIn).toInstant())
                 .build();
 
         var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims))
