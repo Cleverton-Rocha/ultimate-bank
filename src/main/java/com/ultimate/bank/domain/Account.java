@@ -1,10 +1,12 @@
 package com.ultimate.bank.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Table(name = "accounts")
 @Entity
@@ -20,13 +22,25 @@ public class Account {
     private User user;
 
     @Column(nullable = false)
-    private double balance;
+    private int balance;
 
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
 
+    @OneToMany(mappedBy = "account")
+    @JsonManagedReference
+    private List<Transaction> transactions;
+
     public void createAccount(User user) {
         this.user = user;
         this.creationDate = LocalDateTime.now();
+    }
+
+    public void deposit(int value) {
+        this.balance += value;
+    }
+
+    public void withdraw(int value) {
+        this.balance -= value;
     }
 }
