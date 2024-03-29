@@ -1,5 +1,6 @@
 package com.ultimate.bank.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ultimate.bank.model.auth.LoginRequest;
 import com.ultimate.bank.model.user.CreateUserRequest;
 import com.ultimate.bank.model.user.UpdateUserRequest;
@@ -27,6 +28,10 @@ public class User {
 
     @Column(nullable = false)
     private String password;
+
+    @OneToOne(mappedBy = "user")
+    @JsonManagedReference
+    private Account account;
 
     public void createUser(CreateUserRequest request,
                            BCryptPasswordEncoder passwordEncoder,
