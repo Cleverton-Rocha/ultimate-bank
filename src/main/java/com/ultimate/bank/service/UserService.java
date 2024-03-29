@@ -1,18 +1,16 @@
 package com.ultimate.bank.service;
 
-import com.google.common.hash.Hashing;
 import com.ultimate.bank.domain.User;
 import com.ultimate.bank.exception.CPFIsNotUniqueException;
 import com.ultimate.bank.exception.EmailIsNotUniqueException;
 import com.ultimate.bank.model.user.UserRequest;
 import com.ultimate.bank.model.user.UserResponse;
 import com.ultimate.bank.repository.UserRepository;
+import com.ultimate.bank.util.HashUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.nio.charset.StandardCharsets;
 
 @Service
 public class UserService {
@@ -28,7 +26,7 @@ public class UserService {
     @Transactional
     public ResponseEntity<UserResponse> createUser(UserRequest request) {
 
-        String hashedCPF = hashCPF(request.CPF());
+        String hashedCPF = HashUtil.hashCPF(request.CPF());
 
         if (userRepository.findByCPF(hashedCPF).isPresent()) {
             throw new CPFIsNotUniqueException("CPF already exists.");
@@ -51,9 +49,4 @@ public class UserService {
                 newUser.getPassword()));
     }
 
-    private String hashCPF(String CPF) {
-        return Hashing.sha256()
-                .hashString(CPF, StandardCharsets.UTF_8)
-                .toString();
-    }
 }
