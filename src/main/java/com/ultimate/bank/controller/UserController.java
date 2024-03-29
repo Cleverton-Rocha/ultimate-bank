@@ -1,10 +1,7 @@
 package com.ultimate.bank.controller;
 
 
-import com.ultimate.bank.model.user.CreateUserRequest;
-import com.ultimate.bank.model.user.CreateUserResponse;
-import com.ultimate.bank.model.user.UpdateUserRequest;
-import com.ultimate.bank.model.user.UpdateUserResponse;
+import com.ultimate.bank.model.user.*;
 import com.ultimate.bank.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +21,11 @@ public class UserController {
     @PostMapping
     public ResponseEntity<CreateUserResponse> createUser(@RequestBody @Valid CreateUserRequest request) {
         return userService.createUser(request);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UserResponse> getUser(@PathVariable Long id) {
+        return userService.getUser(id);
     }
 
     @PatchMapping("/{id}")
