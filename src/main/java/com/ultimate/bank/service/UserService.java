@@ -4,10 +4,7 @@ import com.ultimate.bank.domain.User;
 import com.ultimate.bank.exception.CPFIsNotUniqueException;
 import com.ultimate.bank.exception.EmailIsNotUniqueException;
 import com.ultimate.bank.exception.UserNotFoundException;
-import com.ultimate.bank.model.user.CreateUserRequest;
-import com.ultimate.bank.model.user.CreateUserResponse;
-import com.ultimate.bank.model.user.UpdateUserRequest;
-import com.ultimate.bank.model.user.UpdateUserResponse;
+import com.ultimate.bank.model.user.*;
 import com.ultimate.bank.repository.UserRepository;
 import com.ultimate.bank.util.HashUtil;
 import jakarta.transaction.Transactional;
@@ -53,6 +50,14 @@ public class UserService {
                 newUser.getName(),
                 newUser.getEmail(),
                 newUser.getPassword()));
+    }
+
+    @Transactional
+    public ResponseEntity<UserResponse> getUser(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found."));
+
+        return ResponseEntity.ok(new UserResponse(user));
     }
 
     @Transactional
