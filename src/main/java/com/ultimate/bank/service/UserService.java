@@ -21,8 +21,7 @@ public class UserService {
     private final AccountRepository accountRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository,
-                          AccountRepository accountRepository,
+    public UserService(UserRepository userRepository, AccountRepository accountRepository,
                        BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.accountRepository = accountRepository;
@@ -52,46 +51,39 @@ public class UserService {
         userRepository.save(newUser);
         accountRepository.save(newAccount);
 
-        return ResponseEntity.ok(new CreateUserResponse(
-                newUser.getId(),
-                newUser.getCPF(),
-                newUser.getName(),
-                newUser.getEmail(),
-                newUser.getPassword()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new CreateUserResponse(newUser));
     }
 
     @Transactional
-    public ResponseEntity<UserResponse> getUser(Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("User not found."));
+    public ResponseEntity<UserResponse> getUser(String CPF, JwtAuthenticationToken token) {
 
-        return ResponseEntity.ok(new UserResponse(user));
-    }
+        String hashedCPF = HashUtil.hashCPF(CPF);
 
-    @Transactional
-    public ResponseEntity<UpdateUserResponse> updateUser(Long id,
-                                                         UpdateUserRequest request,
-                                                         JwtAuthenticationToken token) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("User not found."));
+        User user = userRepository.findByCPF(hashedCPF).orElseThrow(() -> new NotFoundException("User not found."));
 
         if (user.getCPF().equals(token.getName())) {
-            if (request.CPF() != null) {
-                String hashedCPF = HashUtil.hashCPF(request.CPF());
-                if (!hashedCPF.equals(user.getCPF()) &&
-                        userRepository.findByCPF(hashedCPF).isPresent()) {
-                    throw new IsNotUniqueException("CPF already exists.");
-                }
-                user.setCPF(hashedCPF);
-            }
+            return ResponseEntity.status(HttpStatus.OK).body(new UserResponse(user));
+        }
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
+    @Transactional
+    public ResponseEntity<UpdateUserResponse> updateUser(String CPF, UpdateUserRequest request,
+                                                         JwtAuthenticationToken token) {
+        String hashedCPF = HashUtil.hashCPF(CPF);
+
+        User user = userRepository.findByCPF(hashedCPF).orElseThrow(() -> new NotFoundException("User not found."));
+
+        if (user.getCPF().equals(token.getName())) {
 
             if (request.name() != null) {
                 user.setName(request.name());
             }
 
             if (request.email() != null) {
-                if (!request.email().equals(user.getEmail()) &&
-                        userRepository.findByEmail(request.email()).isPresent()) {
+                if (!request.email().equals(user.getEmail()) && userRepository.findByEmail(request.email())
+                                                                              .isPresent()) {
                     throw new IsNotUniqueException("Email already exists.");
                 }
                 user.setEmail(request.email());
@@ -102,24 +94,22 @@ public class UserService {
             }
 
             userRepository.save(user);
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.status(HttpStatus.OK).body(new UpdateUserResponse(user));
         }
 
-        return ResponseEntity.ok(new UpdateUserResponse(user));
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
     @Transactional
-    public ResponseEntity<Void> deleteUser(Long id, JwtAuthenticationToken token) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("User not found."));
+    public ResponseEntity<Void> deleteUser(String CPF, JwtAuthenticationToken token) {
+        String hashedCPF = HashUtil.hashCPF(CPF);
+
+        User user = userRepository.findByCPF(hashedCPF).orElseThrow(() -> new NotFoundException("User not found."));
 
         if (user.getCPF().equals(token.getName())) {
             userRepository.delete(user);
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.status(HttpStatus.OK).build();
         }
-
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 }

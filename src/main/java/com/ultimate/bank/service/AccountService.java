@@ -4,7 +4,6 @@ import com.ultimate.bank.domain.Account;
 import com.ultimate.bank.domain.Transaction;
 import com.ultimate.bank.exception.LimitExceedException;
 import com.ultimate.bank.exception.NotFoundException;
-import com.ultimate.bank.exception.StatusCodeException;
 import com.ultimate.bank.model.account.OperationRequest;
 import com.ultimate.bank.model.transaction.TransactionType;
 import com.ultimate.bank.repository.AccountRepository;
@@ -21,21 +20,20 @@ public class AccountService {
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
 
-    public AccountService(AccountRepository accountRepository,
-                          TransactionRepository transactionRepository) {
+    public AccountService(AccountRepository accountRepository, TransactionRepository transactionRepository) {
         this.accountRepository = accountRepository;
         this.transactionRepository = transactionRepository;
     }
 
-    public void operation(OperationRequest request,
-                          JwtAuthenticationToken token) {
+    public ResponseEntity<Void> operation(OperationRequest request, JwtAuthenticationToken token) {
 
         String hashedCPF = HashUtil.hashCPF(request.CPF());
 
         Account account = accountRepository.findByUserCPF(hashedCPF)
-                .orElseThrow(() -> new NotFoundException("Account not found."));
+                                           .orElseThrow(() -> new NotFoundException("Account not found."));
 
         if (account.getUser().getCPF().equals(token.getName())) {
+
             if (request.type() == TransactionType.Deposit) {
                 if (account.getBalance() + request.amount() > 999999) {
                     throw new LimitExceedException("Deposit limit exceeded.");
@@ -54,15 +52,12 @@ public class AccountService {
             accountRepository.save(account);
 
             Transaction transaction = new Transaction();
-            transaction.createTransaction(account, request.type(),
-                    request.amount(),
-                    request.description());
-
+            transaction.createTransaction(account, request.type(), request.amount(), request.description());
             transactionRepository.save(transaction);
-        } else {
-            throw new StatusCodeException(HttpStatus.FORBIDDEN.value());
+
+            return ResponseEntity.status(HttpStatus.OK).build();
         }
 
-        ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 }

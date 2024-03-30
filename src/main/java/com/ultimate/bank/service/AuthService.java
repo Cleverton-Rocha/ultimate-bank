@@ -5,6 +5,7 @@ import com.ultimate.bank.model.auth.LoginRequest;
 import com.ultimate.bank.model.auth.LoginResponse;
 import com.ultimate.bank.repository.UserRepository;
 import com.ultimate.bank.util.HashUtil;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
@@ -22,8 +23,7 @@ public class AuthService {
     private final JwtEncoder jwtEncoder;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public AuthService(UserRepository userRepository, JwtEncoder jwtEncoder,
-                       BCryptPasswordEncoder passwordEncoder) {
+    public AuthService(UserRepository userRepository, JwtEncoder jwtEncoder, BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.jwtEncoder = jwtEncoder;
         this.passwordEncoder = passwordEncoder;
@@ -35,8 +35,7 @@ public class AuthService {
 
         var user = userRepository.findByCPF(hashedCPF);
 
-        if (user.isEmpty() || !user.get().isLoginCorrect(request,
-                passwordEncoder) ) {
+        if (user.isEmpty() || !user.get().isLoginCorrect(request, passwordEncoder)) {
             throw new BadCredentialsException("Invalid CPF or password.");
         }
 
@@ -44,15 +43,13 @@ public class AuthService {
         var expiresIn = 600L;
 
         var claims = JwtClaimsSet.builder()
-                .issuer("ultimate-bank")
-                .subject(hashedCPF)
-                .issuedAt(now.toInstant())
-                .expiresAt(now.plusSeconds(expiresIn).toInstant())
-                .build();
+                                 .issuer("ultimate-bank")
+                                 .subject(hashedCPF)
+                                 .issuedAt(now.toInstant())
+                                 .expiresAt(now.plusSeconds(expiresIn).toInstant()).build();
 
-        var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims))
-                .getTokenValue();
+        var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
 
-        return ResponseEntity.ok(new LoginResponse(jwtValue, expiresIn));
+        return ResponseEntity.status(HttpStatus.OK).body(new LoginResponse(jwtValue, expiresIn));
     }
 }

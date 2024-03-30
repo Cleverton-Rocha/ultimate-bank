@@ -1,6 +1,5 @@
 package com.ultimate.bank.controller;
 
-
 import com.ultimate.bank.model.user.*;
 import com.ultimate.bank.service.UserService;
 import jakarta.validation.Valid;
@@ -23,22 +22,20 @@ public class UserController {
         return userService.createUser(request);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> getUser(@PathVariable Long id) {
-        return userService.getUser(id);
+    @GetMapping("/{CPF}")
+    public ResponseEntity<UserResponse> getUser(@PathVariable String CPF, JwtAuthenticationToken token) {
+        return userService.getUser(CPF, token);
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<UpdateUserResponse> updateUser(@PathVariable Long id,
-                                                         @RequestBody @Valid
-                                                         UpdateUserRequest request,
+    @PatchMapping("/{CPF}")
+    public ResponseEntity<UpdateUserResponse> updateUser(@PathVariable String CPF,
+                                                         @RequestBody @Valid UpdateUserRequest request,
                                                          JwtAuthenticationToken token) {
-        return userService.updateUser(id, request, token);
+        return userService.updateUser(CPF, request, token);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id,
-                                           JwtAuthenticationToken token) {
-        return userService.deleteUser(id, token);
+    @DeleteMapping("/{CPF}")
+    public ResponseEntity<Void> deleteUser(@PathVariable String CPF, JwtAuthenticationToken token) {
+        return userService.deleteUser(CPF, token);
     }
 }

@@ -38,6 +38,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<String> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
-        return ResponseEntity.status(400).body(Objects.requireNonNull(ex.getBindingResult().getFieldError()).getDefaultMessage());
+        return ResponseEntity.status(400)
+                             .body(Objects.requireNonNull(ex.getBindingResult().getFieldError()).getDefaultMessage());
     }
 }
