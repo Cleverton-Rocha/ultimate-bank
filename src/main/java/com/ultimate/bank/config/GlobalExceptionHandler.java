@@ -1,9 +1,6 @@
 package com.ultimate.bank.config;
 
-import com.ultimate.bank.exception.BadCredentialsException;
-import com.ultimate.bank.exception.InsufficientFundsException;
-import com.ultimate.bank.exception.IsNotUniqueException;
-import com.ultimate.bank.exception.NotFoundException;
+import com.ultimate.bank.exception.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -29,9 +26,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(404).body(ex.getMessage());
     }
 
-    @ExceptionHandler(InsufficientFundsException.class)
-    public ResponseEntity<String> handleInsufficientFunds(InsufficientFundsException ex) {
+    @ExceptionHandler(LimitExceedException.class)
+    public ResponseEntity<String> handleInsufficientFunds(LimitExceedException ex) {
         return ResponseEntity.status(422).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(StatusCodeException.class)
+    public ResponseEntity<String> handleStatusCodeException(StatusCodeException ex) {
+        return ResponseEntity.status(ex.getStatusCode()).build();
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
