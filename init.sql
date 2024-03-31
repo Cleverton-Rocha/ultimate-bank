@@ -19,6 +19,8 @@ CREATE TABLE IF NOT EXISTS accounts (
 CREATE TABLE IF NOT EXISTS transactions (
     id SERIAL PRIMARY KEY,
     account_id INTEGER REFERENCES accounts(id) ON DELETE CASCADE,
+    receiver_account_name VARCHAR(255),
+    sender_account_name VARCHAR(255),
     type transaction_type NOT NULL,
     amount INT NOT NULL,
     description VARCHAR(255) NOT NULL,
