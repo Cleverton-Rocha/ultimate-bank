@@ -40,7 +40,7 @@ public class AuthService {
         }
 
         var now = Instant.now().atZone(ZoneId.systemDefault());
-        var expiresIn = 600L;
+        var expiresIn = 7200L;
 
         var claims = JwtClaimsSet.builder()
                                  .issuer("ultimate-bank")
@@ -50,6 +50,6 @@ public class AuthService {
 
         var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
 
-        return ResponseEntity.status(HttpStatus.OK).body(new LoginResponse(jwtValue, expiresIn));
+        return ResponseEntity.status(HttpStatus.OK).body(new LoginResponse(jwtValue, hashedCPF, expiresIn));
     }
 }
