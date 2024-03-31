@@ -43,4 +43,9 @@ public class Account {
     public void withdraw(int value) {
         this.balance -= value;
     }
+
+    public void transfer(int value, Account targetAccount) {
+        this.balance -= value;
+        targetAccount.deposit(value);
+    }
 }
