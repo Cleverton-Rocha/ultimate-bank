@@ -55,9 +55,7 @@ public class UserService {
     }
 
     @Transactional
-    public ResponseEntity<UserResponse> getUser(String CPF, JwtAuthenticationToken token) {
-
-        String hashedCPF = HashUtil.hashCPF(CPF);
+    public ResponseEntity<UserResponse> getUser(String hashedCPF, JwtAuthenticationToken token) {
 
         User user = userRepository.findByCPF(hashedCPF).orElseThrow(() -> new NotFoundException("User not found."));
 
