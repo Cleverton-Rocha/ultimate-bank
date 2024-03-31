@@ -5,6 +5,7 @@ import com.ultimate.bank.domain.Transaction;
 import com.ultimate.bank.exception.LimitExceedException;
 import com.ultimate.bank.exception.NotFoundException;
 import com.ultimate.bank.model.account.OperationRequest;
+import com.ultimate.bank.model.account.TransferRequest;
 import com.ultimate.bank.model.transaction.TransactionType;
 import com.ultimate.bank.repository.AccountRepository;
 import com.ultimate.bank.repository.TransactionRepository;
@@ -25,11 +26,9 @@ public class AccountService {
         this.transactionRepository = transactionRepository;
     }
 
-    public ResponseEntity<Void> operation(OperationRequest request, JwtAuthenticationToken token) {
+    public ResponseEntity<Void> transaction(OperationRequest request, JwtAuthenticationToken token) {
 
-        String hashedCPF = HashUtil.hashCPF(request.CPF());
-
-        Account account = accountRepository.findByUserCPF(hashedCPF)
+        Account account = accountRepository.findByUserCPF(request.hashedCPF())
                                            .orElseThrow(() -> new NotFoundException("Account not found."));
 
         if (account.getUser().getCPF().equals(token.getName())) {
@@ -42,7 +41,7 @@ public class AccountService {
             }
 
             if (request.type() == TransactionType.Withdraw) {
-                if (account.getBalance() < request.amount() - account.getBalance()) {
+                if (account.getBalance() < request.amount()) {
                     throw new LimitExceedException("Insufficient funds.");
                 }
 
@@ -58,6 +57,44 @@ public class AccountService {
             return ResponseEntity.status(HttpStatus.OK).build();
         }
 
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
+    public ResponseEntity<Void> transfer(TransferRequest request, JwtAuthenticationToken token) {
+
+        String hashedReceiverCPF = HashUtil.hashCPF(request.receiverCPF());
+
+        Account senderAccount = accountRepository.findByUserCPF(request.hashedCPF())
+                                                 .orElseThrow(() -> new NotFoundException("Account not found."));
+        Account receiverAccount = accountRepository.findByUserCPF(hashedReceiverCPF)
+                                                   .orElseThrow(
+                                                           () -> new NotFoundException("Receiver account not found" +
+                                                                                               "."));
+
+        if (senderAccount.getUser().getCPF().equals(token.getName())) {
+            if (senderAccount.getBalance() < request.amount()) {
+                throw new LimitExceedException("Insufficient funds.");
+            }
+
+            senderAccount.transfer(request.amount(), receiverAccount);
+
+            accountRepository.save(senderAccount);
+            accountRepository.save(receiverAccount);
+
+            Transaction sendertransaction = new Transaction();
+            sendertransaction.senderTransferTransaction(senderAccount, receiverAccount, TransactionType.Transfer,
+                                                        request.amount(),
+                                                        request.description());
+            transactionRepository.save(sendertransaction);
+
+            Transaction receiverTransaction = new Transaction();
+            receiverTransaction.receiverTransferTransaction(receiverAccount, senderAccount, TransactionType.Transfer,
+                                                            request.amount(),
+                                                            request.description());
+            transactionRepository.save(receiverTransaction);
+
+            return ResponseEntity.status(HttpStatus.OK).build();
+        }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 }
