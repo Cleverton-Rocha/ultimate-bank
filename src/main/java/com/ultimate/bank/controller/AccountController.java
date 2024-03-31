@@ -1,6 +1,7 @@
 package com.ultimate.bank.controller;
 
 import com.ultimate.bank.model.account.OperationRequest;
+import com.ultimate.bank.model.account.TransferRequest;
 import com.ultimate.bank.service.AccountService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,13 @@ public class AccountController {
     }
 
     @PostMapping("/transaction")
-    public ResponseEntity<Void> transaction(@RequestBody @Valid OperationRequest request, JwtAuthenticationToken token) {
-        return accountService.operation(request, token);
+    public ResponseEntity<Void> transaction(@RequestBody @Valid OperationRequest request,
+                                            JwtAuthenticationToken token) {
+        return accountService.transaction(request, token);
+    }
+
+    @PostMapping("/transfer")
+    public ResponseEntity<Void> transfer(@RequestBody @Valid TransferRequest request, JwtAuthenticationToken token) {
+        return accountService.transfer(request, token);
     }
 }
