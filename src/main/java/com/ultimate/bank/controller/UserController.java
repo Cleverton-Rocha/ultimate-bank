@@ -22,9 +22,9 @@ public class UserController {
         return userService.createUser(request);
     }
 
-    @GetMapping("/{CPF}")
-    public ResponseEntity<UserResponse> getUser(@PathVariable String CPF, JwtAuthenticationToken token) {
-        return userService.getUser(CPF, token);
+    @GetMapping("/{hashedCPF}")
+    public ResponseEntity<UserResponse> getUser(@PathVariable String hashedCPF, JwtAuthenticationToken token) {
+        return userService.getUser(hashedCPF, token);
     }
 
     @PatchMapping("/{CPF}")
