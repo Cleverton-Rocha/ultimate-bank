@@ -11,9 +11,14 @@ public record CreateUserRequest(
         @Size(min = 11, max = 11, message = "CPF must have 11 characters.")
         @Pattern(regexp = "^[0-9]\\d*$", message = "CPF must have only numbers, without special characters or letters.")
         String CPF,
-        @NotNull(message = "Name cannot be null")
-        @Size(min = 3, max = 100, message = "Name must have between 3 and 100 characters.")
-        String name,
+        @NotNull(message = "First name cannot be null")
+        @Size(min = 1, message = "First name must have at least 1 character.")
+        String firstName,
+
+        @NotNull(message = "Last name cannot be null")
+        @Size(min = 1, message = "Last name must have at least 1 character.")
+        String lastName,
+
         @NotNull @Email(message = "Write a valid email.")
         String email,
         @NotNull(message = "Password cannot be null")

@@ -18,8 +18,11 @@ public class User {
     @Column(length = 11, nullable = false, unique = true)
     private String CPF;
 
-    @Column(nullable = false)
-    private String name;
+    @Column(name = "first_name", nullable = false)
+    private String firstName;
+
+    @Column(name = "last_name", nullable = false)
+    private String lastName;
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -33,7 +36,8 @@ public class User {
 
     public void createUser(CreateUserRequest request, BCryptPasswordEncoder passwordEncoder, String hashedCPF) {
         this.CPF = hashedCPF;
-        this.name = request.name();
+        this.firstName = request.firstName();
+        this.lastName = request.lastName();
         this.email = request.email();
         this.password = passwordEncoder.encode(request.password());
     }

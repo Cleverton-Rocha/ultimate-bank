@@ -75,8 +75,12 @@ public class UserService {
 
         if (user.getCPF().equals(token.getName())) {
 
-            if (request.name() != null) {
-                user.setName(request.name());
+            if (request.firstName() != null) {
+                user.setFirstName(request.firstName());
+            }
+
+            if (request.lastName() != null) {
+                user.setLastName(request.lastName());
             }
 
             if (request.email() != null) {

@@ -57,7 +57,7 @@ public class Transaction {
                                           int amount,
                                           String description) {
         this.account = senderAccount;
-        this.to = receiverAccount.getUser().getName();
+        this.to = receiverAccount.getUser().getFirstName() + " " + receiverAccount.getUser().getLastName();
         this.type = type;
         this.amount = amount;
         this.description = description;
@@ -68,7 +68,7 @@ public class Transaction {
                                             int amount,
                                             String description) {
         this.account = receiverAccount;
-        this.from = senderAccount.getUser().getName();
+        this.from = senderAccount.getUser().getFirstName() + " " + senderAccount.getUser().getLastName();
         this.type = type;
         this.amount = amount;
         this.description = description;
