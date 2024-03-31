@@ -7,7 +7,7 @@ import org.hibernate.validator.constraints.Length;
 
 public record LoginRequest(
         @NotNull
-        @Length(min = 11, max = 11, message = "CPF must have 11 characters.")
+        @Size(min = 11, max = 11, message = "CPF must have 11 characters.")
         @Pattern(regexp = "^[0-9]\\d*$", message = "CPF must have only numbers, without special characters or letters.")
         String CPF,
         @NotNull(message = "Password cannot be null")
