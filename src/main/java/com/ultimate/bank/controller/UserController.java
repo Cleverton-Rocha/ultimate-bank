@@ -27,15 +27,15 @@ public class UserController {
         return userService.getUser(hashedCPF, token);
     }
 
-    @PatchMapping("/{CPF}")
-    public ResponseEntity<UpdateUserResponse> updateUser(@PathVariable String CPF,
+    @PatchMapping("/{hashedCPF}")
+    public ResponseEntity<UpdateUserResponse> updateUser(@PathVariable String hashedCPF,
                                                          @RequestBody @Valid UpdateUserRequest request,
                                                          JwtAuthenticationToken token) {
-        return userService.updateUser(CPF, request, token);
+        return userService.updateUser(hashedCPF, request, token);
     }
 
-    @DeleteMapping("/{CPF}")
-    public ResponseEntity<Void> deleteUser(@PathVariable String CPF, JwtAuthenticationToken token) {
-        return userService.deleteUser(CPF, token);
+    @DeleteMapping("/{hashedCPF}")
+    public ResponseEntity<Void> deleteUser(@PathVariable String hashedCPF, JwtAuthenticationToken token) {
+        return userService.deleteUser(hashedCPF, token);
     }
 }

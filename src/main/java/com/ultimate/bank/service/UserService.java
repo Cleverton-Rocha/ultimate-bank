@@ -67,10 +67,8 @@ public class UserService {
     }
 
     @Transactional
-    public ResponseEntity<UpdateUserResponse> updateUser(String CPF, UpdateUserRequest request,
+    public ResponseEntity<UpdateUserResponse> updateUser(String hashedCPF, UpdateUserRequest request,
                                                          JwtAuthenticationToken token) {
-        String hashedCPF = HashUtil.hashCPF(CPF);
-
         User user = userRepository.findByCPF(hashedCPF).orElseThrow(() -> new NotFoundException("User not found."));
 
         if (user.getCPF().equals(token.getName())) {
@@ -103,8 +101,7 @@ public class UserService {
     }
 
     @Transactional
-    public ResponseEntity<Void> deleteUser(String CPF, JwtAuthenticationToken token) {
-        String hashedCPF = HashUtil.hashCPF(CPF);
+    public ResponseEntity<Void> deleteUser(String hashedCPF, JwtAuthenticationToken token) {
 
         User user = userRepository.findByCPF(hashedCPF).orElseThrow(() -> new NotFoundException("User not found."));
 
