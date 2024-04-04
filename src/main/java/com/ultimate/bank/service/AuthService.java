@@ -35,7 +35,7 @@ public class AuthService {
 
         var user = userRepository.findByCPF(hashedCPF);
 
-        if (user.isEmpty() || !user.get().isLoginCorrect(request, passwordEncoder)) {
+        if (user.isEmpty() || user.get().isLoginIncorrect(request.password(), passwordEncoder)) {
             throw new BadCredentialsException("Invalid CPF or password.");
         }
 
