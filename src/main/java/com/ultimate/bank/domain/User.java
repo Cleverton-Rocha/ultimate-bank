@@ -42,8 +42,8 @@ public class User {
         this.password = passwordEncoder.encode(request.password());
     }
 
-    public boolean isLoginCorrect(LoginRequest request, BCryptPasswordEncoder passwordEncoder) {
-        return passwordEncoder.matches(request.password(), this.password);
+    public boolean isLoginIncorrect(String password, BCryptPasswordEncoder passwordEncoder) {
+        return !passwordEncoder.matches(password, this.password);
     }
 
 }
