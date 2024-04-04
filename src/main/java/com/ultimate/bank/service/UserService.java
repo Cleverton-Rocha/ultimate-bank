@@ -2,6 +2,7 @@ package com.ultimate.bank.service;
 
 import com.ultimate.bank.domain.Account;
 import com.ultimate.bank.domain.User;
+import com.ultimate.bank.exception.BadCredentialsException;
 import com.ultimate.bank.exception.IsNotUniqueException;
 import com.ultimate.bank.exception.NotFoundException;
 import com.ultimate.bank.model.user.*;
@@ -89,12 +90,28 @@ public class UserService {
                 user.setEmail(request.email());
             }
 
-            if (request.password() != null) {
-                user.setPassword(passwordEncoder.encode(request.password()));
-            }
-
             userRepository.save(user);
             return ResponseEntity.status(HttpStatus.OK).body(new UpdateUserResponse(user));
+        }
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
+    @Transactional
+    public ResponseEntity<Void> updatePassword(String hashedCPF, UpdatePasswordRequest request,
+                                               JwtAuthenticationToken token) {
+
+        User user = userRepository.findByCPF(hashedCPF).orElseThrow(() -> new NotFoundException("User not found."));
+
+        if (user.getCPF().equals(token.getName())) {
+
+            if (user.isLoginIncorrect(request.actualPassword(), passwordEncoder)){
+                throw new BadCredentialsException("Invalid password.");
+            }
+
+            user.setPassword(passwordEncoder.encode(request.newPassword()));
+            userRepository.save(user);
+            return ResponseEntity.status(HttpStatus.OK).build();
         }
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -109,6 +126,7 @@ public class UserService {
             userRepository.delete(user);
             return ResponseEntity.status(HttpStatus.OK).build();
         }
+
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 }
