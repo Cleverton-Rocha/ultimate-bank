@@ -1,7 +1,7 @@
 Ultimate Bank
 =============
 
-Este é o repositório do Ultimate Bank, um banco desenvolvido em Java que utiliza diversas tecnologias modernas para fornecer funcionalidades bancárias completas. Com o Ultimate Bank, os usuários podem realizar operações CRUD (Criar, Ler, Atualizar, Deletar) de usuários, com a criação automática de contas bancárias. Além disso, os usuários podem efetuar depósitos, saques e transferências para outros usuários.
+Este é o Ultimate Bank, um banco desenvolvido em Java. Com o Ultimate Bank, os usuários podem realizar operações CRUD (Criar, Ler, Atualizar, Deletar) de usuários, com a criação automática de contas bancárias. Além disso, os usuários podem efetuar depósitos, saques e transferências para outros usuários.
 
 Tecnologias Utilizadas
 ----------------------
